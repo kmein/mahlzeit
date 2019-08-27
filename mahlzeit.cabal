@@ -1,0 +1,21 @@
+cabal-version:       >=1.10
+name:                mahlzeit
+version:             0.1.0
+synopsis:            Recipe parser
+homepage:            https://github.com/kmein/mahlzeit
+license:             MIT
+license-file:        LICENSE
+author:              Kierán Meinhardt
+maintainer:          kieran.meinhardt@gmail.com
+category:            Text
+build-type:          Simple
+extra-source-files:  CHANGELOG.md
+
+executable mahlzeit
+  main-is:             Main.hs
+  other-modules:       Parser
+  build-depends:       base >=4.12 && <4.13
+                     , megaparsec >= 7 && <8
+                     , text >= 1.2.4.0 && <2
+  hs-source-dirs:      src
+  default-language:    Haskell2010
