@@ -8,11 +8,27 @@ data Meal = Meal
   , categories :: [Text]  -- maximum count: 5
   , yield :: Natural  -- from 1 to 9999
   , ingredients :: [Ingredient]
-  , directions :: [Text]
+  , directions :: Text
   } deriving Show
 
 data Ingredient = Ingredient
   { quantity :: Maybe Rational
-  , unit :: Text
+  , unit :: Maybe Unit
   , name :: Text
   } deriving Show
+
+data Unit 
+  = Teaspoon
+  | Tablespoon
+  | Small
+  | Medium
+  | Large
+  | Cup
+  | Pinch
+  | Dash
+  | Package
+  | Pint
+  | Quart
+  | Ounce
+  deriving Show
+

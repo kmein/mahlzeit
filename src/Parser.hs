@@ -17,7 +17,7 @@ import Text.Megaparsec.Char
 import Text.Megaparsec.Char.Lexer (float, decimal)
 import qualified Data.Text as Text
 
-import Types (Meal(..), Ingredient(..))
+import Types
 
 type Parser = Parsec Void Text
 
@@ -78,16 +78,29 @@ parseFraction = do
             denominator <- decimal
             pure (firstNumber % denominator))
 
-parseUnit :: Parser Text
-parseUnit = Text.pack <$> some letterChar
+parseUnit :: Parser (Maybe Unit)
+parseUnit = 
+  (Just Tablespoon <$ (string "tb" <|> string "T"))
+  <|> (Just Teaspoon <$ (string "ts" <|> string "t"))
+  <|> (Just Small <$ string "sm")
+  <|> (Just Medium <$ string "md")
+  <|> (Just Large <$ string "lg")
+  <|> (Just Pinch <$ string "pn")
+  <|> (Just Dash <$ string "ds")
+  <|> (Just Package <$ string "pk")
+  <|> (Just Pint <$ string "pt")
+  <|> (Just Quart <$ string "qt")
+  <|> (Just Cup <$ string "c")
+  <|> (Just Ounce <$ string "oz")
+  <|> (Nothing <$ (string "x" <|> string "ea"))
 
 parseName :: Parser Text
 parseName = Text.pack <$> anySingle `someTill` newline
 
 parseIngredient :: Parser Ingredient
 parseIngredient = do
-  optional space
-  q <- optional parseQuantity
+  optional space 
+  q <- Just <$> parseQuantity 
   space
   u <- parseUnit
   space
@@ -102,11 +115,6 @@ parseIngredient = do
 parseHeaderBlock :: Parser (Text, [Text], Natural)
 parseHeaderBlock = (,,) <$> parseTitle <*> parseCategories <*> parseYield
 
-parseDirections :: Parser [String]
-parseDirections = paragraph `sepBy1` newline
-  where 
-    paragraph :: Parser String
-    paragraph = concat <$> some (anySingle `someTill` newline)
 
 parseMeal :: Parser Meal
 parseMeal = do
@@ -115,6 +123,5 @@ parseMeal = do
   categories <- parseCategories
   yield <- parseYield
   ingredients <- some parseIngredient
-  directionsStr <- parseDirections
-  parseFooter
+  directions <- Text.pack <$> anySingle `someTill` parseFooter
   pure Meal{..}
