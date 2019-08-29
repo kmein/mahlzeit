@@ -1,7 +1,7 @@
 cabal-version:       >=1.10
 name:                mahlzeit
 version:             0.1.0
-synopsis:            Recipe parser
+synopsis:            Recipe toolkit
 homepage:            https://github.com/kmein/mahlzeit
 license:             MIT
 license-file:        LICENSE
@@ -13,12 +13,22 @@ extra-source-files:  CHANGELOG.md
 
 executable mahlzeit
   main-is:             Main.hs
+  other-modules:       Mahlzeit.Recipe
+  build-depends:       base >=4.12 && <4.13
+                     , yaml
+                     , text
+                     , ansi-terminal
+  hs-source-dirs:      mahlzeit
+  default-language:    Haskell2010
+
+executable mahlzeit-mmf
+  main-is:             Main.hs
   other-modules:       Parser
                      , Types
                      , PrettyPrinter
   build-depends:       base >=4.12 && <4.13
-                     , megaparsec >= 7 && <8
-                     , text >=1 && <2
-                     , pretty >=1 && <2
-  hs-source-dirs:      src
+                     , megaparsec
+                     , text
+                     , pretty
+  hs-source-dirs:      mahlzeit-mmf
   default-language:    Haskell2010
