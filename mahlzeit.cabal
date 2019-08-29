@@ -14,8 +14,11 @@ extra-source-files:  CHANGELOG.md
 executable mahlzeit
   main-is:             Main.hs
   other-modules:       Parser
+                     , Types
+                     , PrettyPrinter
   build-depends:       base >=4.12 && <4.13
                      , megaparsec >= 7 && <8
                      , text >=1 && <2
+                     , pretty >=1 && <2
   hs-source-dirs:      src
   default-language:    Haskell2010
