@@ -46,9 +46,9 @@ parseCategories = do
   optional space
   string "Categories:"
   space
-  sepBy1 parseCategory (char ',' *> optional space) 
+  sepBy1 parseCategory (char ',' *> optional space)  
   where 
-    parseCategory = Text.pack <$> some letterChar
+    parseCategory = Text.pack <$> some (letterChar <|> char ' ')
 
 parseYield :: Parser Natural
 parseYield = do
@@ -92,6 +92,7 @@ parseUnit =
   <|> (Just Quart <$ string "qt")
   <|> (Just Cup <$ string "c")
   <|> (Just Ounce <$ string "oz")
+  <|> (Just Pound <$ string "lb")
   <|> (Nothing <$ (string "x" <|> string "ea"))
 
 parseName :: Parser Text
@@ -122,6 +123,6 @@ parseMeal = do
   title <- parseTitle 
   categories <- parseCategories
   yield <- parseYield
-  ingredients <- some parseIngredient
-  directions <- Text.pack <$> anySingle `someTill` parseFooter
+  ingredients <- some (try parseIngredient)
+  directions <- map (Text.replace "\n" " ") . Text.splitOn "\n\n" . Text.strip . Text.pack <$> anySingle `someTill` try parseFooter
   pure Meal{..}

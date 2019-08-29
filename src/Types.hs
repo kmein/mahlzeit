@@ -8,7 +8,7 @@ data Meal = Meal
   , categories :: [Text]  -- maximum count: 5
   , yield :: Natural  -- from 1 to 9999
   , ingredients :: [Ingredient]
-  , directions :: Text
+  , directions :: [Text]
   } deriving Show
 
 data Ingredient = Ingredient
@@ -29,6 +29,7 @@ data Unit
   | Package
   | Pint
   | Quart
+  | Pound
   | Ounce
   deriving Show
 
