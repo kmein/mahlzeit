@@ -1,0 +1,27 @@
+title: Midnight Pupp
+author: Grand-Hotel Pupp
+source: https://www.afar.com/magazine/czech-please
+scale: 1
+
+tags: [cocktail]
+
+ingredients:
+  - ingredient: Becherovka
+    amount: 20
+    unit: ml
+  - ingredient: Amaretto
+    amount: 20
+    unit: ml
+  - ingredient: Apricot Brandy
+    amount: 20
+    unit: ml
+  - ingredient: Organge Juice
+    amount: 150
+    unit: ml
+  - ingredient: dash of Grenadine
+    amount: 1
+
+method:
+  - Pour the Becherovka, Amaretto, apricot brandy, and orange juice into a cocktail shaker with several ice cubes.
+  - Shake well.
+  - Strain into a tall glass, add a dash of grenadine, and serve.
