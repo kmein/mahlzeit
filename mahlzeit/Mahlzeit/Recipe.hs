@@ -3,11 +3,14 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Mahlzeit.Recipe where
 
-import Control.Applicative (empty)
-import Data.Text (Text)
-import Data.Yaml (FromJSON(parseJSON), ToJSON(toJSON), Value(String))
-import GHC.Generics (Generic)
-import Numeric.Natural (Natural)
+import           Control.Applicative            ( empty )
+import           Data.Text                      ( Text )
+import           Data.Yaml                      ( FromJSON(parseJSON)
+                                                , ToJSON(toJSON)
+                                                , Value(String)
+                                                )
+import           GHC.Generics                   ( Generic )
+import           Numeric.Natural                ( Natural )
 
 data Recipe
   = Recipe
@@ -59,12 +62,9 @@ instance ToJSON Unit where
 type RecipeID = String
 
 rescale :: Double -> Recipe -> Recipe
-rescale factor recipe = 
-  recipe 
-  { ingredients = 
-    map 
-      (\ingredient -> ingredient { amount = factor * amount ingredient / scale recipe }) 
-      (ingredients recipe) 
-  , scale = factor
+rescale factor recipe = recipe
+  { ingredients = map (\ingredient -> ingredient { amount = factor * amount ingredient / scale recipe })
+                      (ingredients recipe)
+  , scale       = factor
   }
 

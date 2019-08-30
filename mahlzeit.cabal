@@ -16,13 +16,14 @@ executable mahlzeit
   other-modules:       Mahlzeit.Recipe
                      , Mahlzeit.Find
                      , Mahlzeit.PrettyPrinter
-  build-depends:       base >=4.12 && <4.13
+  build-depends:       base
                      , yaml
                      , text
                      , ansi-terminal
                      , directory
                      , filepath
                      , optparse-applicative
+                     , prettyprinter
   hs-source-dirs:      mahlzeit
   default-language:    Haskell2010
 
@@ -31,8 +32,8 @@ executable mahlzeit-mmf
   other-modules:       Parser
                      , Types
                      , PrettyPrinter
-  build-depends:       base >=4.12 && <4.13
-                     , megaparsec
+  build-depends:       base
+                     , megaparsec >=7 && <8
                      , text
                      , pretty
   hs-source-dirs:      mahlzeit-mmf

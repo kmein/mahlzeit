@@ -1,68 +1,79 @@
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE RecordWildCards #-}
-module Mahlzeit.PrettyPrinter where
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeApplications #-}
+module Mahlzeit.PrettyPrinter
+  ( putDoc
+  , pretty
+  , recipeList
+  )
+where
 
-import Data.Ratio (numerator, denominator)
-import Data.Text (Text, pack, unpack)
-import Numeric.Natural (Natural)
-import System.Console.ANSI
-import Text.Printf
+import           Data.Ratio                     ( numerator
+                                                , denominator
+                                                )
+import           Data.Text                      ( Text
+                                                , pack
+                                                , unpack
+                                                )
+import           Numeric.Natural                ( Natural )
+import           System.Console.ANSI
+import           Text.Printf
+import           Data.Text.Prettyprint.Doc
+import           Data.Text.Prettyprint.Doc.Util ( reflow )
+import           Data.Text.Prettyprint.Doc.Render.Text
+                                                ( putDoc )
 import qualified Data.Text
 
-import Mahlzeit.Recipe
+import           Mahlzeit.Recipe
 
-shortInfo :: RecipeID -> Recipe -> Text
-shortInfo recipeId Recipe{..} = 
-  Data.Text.unwords 
-  [ "[" <> withSGR [SetColor Foreground Dull Cyan] (pack recipeId) <> "]"
-  , title 
-  , withSGR [SetColor Foreground Vivid Black] $ Data.Text.intercalate ", " tags
-  ]
+recipeList :: [(RecipeID, Recipe)] -> Doc ann
+recipeList = vcat . map (uncurry prettyEntry)
 
-{-
-  display tags
-  find out how to display author
--}
-recipeInfo :: Recipe -> Text
-recipeInfo Recipe {..} =
-  let header =
-        Data.Text.unlines
-          [ "# " <> maybe title (\s -> "[" <> title <> "](" <> s <> ")") source
-          , "Tags: " <> Data.Text.intercalate ", " tags 
-          , ""
-          , "Yield: " <> prettyDouble scale
-          ]
-      ingredientsSection =
-        Data.Text.unlines $
-          "## Ingredients" :
-          map (\Ingredient{..} -> 
-            let unitString = case unit of
-                               Just Gram -> "g"
-                               Just Milliliter -> "ml"
-                               Just Tablespoon -> "tbs"
-                               Just Teaspoon -> "ts"
-                               Nothing -> ""
-             in Data.Text.unwords ["*", prettyDouble amount, unitString, ingredient]) ingredients
-      methodSection =
-        Data.Text.unlines $
-          "## Method" :
-          zipWith (\(i :: Natural) step -> pack (show i) <> ". " <> step) [1..] method
-  in Data.Text.unlines 
-    [ header
-    , ingredientsSection
-    , methodSection
-    ] 
+prettyEntry :: RecipeID -> Recipe -> Doc ann
+prettyEntry recipeId Recipe {..} =
+  brackets (sgr [SetColor Foreground Dull Cyan] $ pretty recipeId) <+> pretty title <+> sgr
+    [SetColor Foreground Vivid Black]
+    (commaSep (map pretty tags))
 
-withSGR :: [SGR] -> Text -> Text
-withSGR sgr t = pack (setSGRCode sgr) <> t <> pack (setSGRCode [])
-
-prettyDouble :: Double -> Text
-prettyDouble x = 
-  let f = toRational x
+prettyDouble :: Double -> Doc ann
+prettyDouble x =
+  let f      = toRational x
       (n, d) = (numerator f, denominator f)
       (q, r) = n `quotRem` d
-   in 
-     Data.Text.unwords $
-       [pack (show q) | q /= 0] 
-       <> [pack (show r) <> "/" <> pack (show d) | r /= 0] 
+  in  (if q /= 0 then pretty q else emptyDoc) <+> (if r /= 0 then pretty r <> "/" <> pretty d else emptyDoc)
+
+commaSep :: [Doc ann] -> Doc ann
+commaSep = encloseSep emptyDoc emptyDoc (comma <> space)
+
+instance Pretty Recipe where
+  pretty Recipe{..} = vsep
+    [ "#" <+> maybe (pretty title) (\s -> brackets (pretty title) <> parens (pretty s)) source
+    , "Tags" <> colon <+> commaSep (map pretty tags)
+    , "Yield" <> colon <+> prettyDouble scale
+    , softline
+    , "##" <+> "Ingredients"
+    , vcat (map pretty ingredients)
+    , softline
+    , "##" <+> "Method"
+    , vsep $ zipWith (\i step -> pretty @Natural i <> dot <+> pretty step) [1..] method
+    ]
+
+instance Pretty Unit where
+  pretty = \case
+    Gram       -> "g"
+    Milliliter -> "ml"
+    Tablespoon -> "tbs"
+    Teaspoon   -> "ts"
+
+instance Pretty Ingredient where
+  pretty Ingredient{..} =
+    "-"
+    <+> fill 4 (prettyDouble amount)
+    <+> fill 3 (maybe emptyDoc pretty unit)
+    <+> pretty ingredient
+    <+> maybe emptyDoc (parens . pretty) note
+
+sgr :: [SGR] -> Doc ann -> Doc ann
+sgr codes t = pretty (setSGRCode codes) <> t <> pretty (setSGRCode [])

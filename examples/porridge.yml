@@ -5,24 +5,24 @@ scale: 1
 tags: [breakfast]
 
 ingredients:
-- ingredient: non-dairy milk
+- ingredient: Non-dairy Milk
   amount: 125
   unit: ml
   note: oat works best
-- ingredient: water
+- ingredient: Water
   amount: 125
   unit: ml
-- ingredient: rolled oats
+- ingredient: Rolled oats
   amount: 125
   unit: ml
-- ingredient: raisins
+- ingredient: Raisins
   amount: 10
   unit: g
-- ingredient: cinnamon
+- ingredient: Cinnamon
   amount: 1
   unit: ts
 
 method:
-- mix all ingredients together in a pot.
-- heat up over medium heat.
-- keep stirring until the it reaches the desired consistency.
+- Mix all ingredients together in a pot.
+- Heat up over medium heat.
+- Keep stirring until the it reaches the desired consistency.
