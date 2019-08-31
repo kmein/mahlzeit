@@ -62,6 +62,7 @@ searchPredicate :: SearchOptions -> Recipe -> Bool
 searchPredicate SearchOptions {..} Recipe {..}
   = let
       titleOk = maybe True (title `contains`) searchTitle
+      -- all ingredient searches occur in the recipe's ingredients
       ingredientsOk =
         maybe True (all (\search -> any ((`contains` search) . ingredient) ingredients)) searchIngredients
       tagsOk =
@@ -77,7 +78,9 @@ main = do
     Search options -> do
       recipes <- find $ searchPredicate options
       putDoc $ recipeList recipes
+      putChar '\n'
     Display recipeId factor -> do
       recipe <- findById recipeId
       let recipe' = maybe recipe (`rescale` recipe) factor
       putDoc $ pretty recipe'
+      putChar '\n'

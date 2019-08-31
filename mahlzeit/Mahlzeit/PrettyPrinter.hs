@@ -49,9 +49,9 @@ commaSep = encloseSep emptyDoc emptyDoc (comma <> space)
 
 instance Pretty Recipe where
   pretty Recipe{..} = vsep
-    [ "#" <+> maybe (pretty title) (\s -> brackets (pretty title) <> parens (pretty s)) source
-    , "Tags" <> colon <+> commaSep (map pretty tags)
-    , "Yield" <> colon <+> prettyDouble scale
+    [ "#" <+> pretty title <> maybe emptyDoc (\s -> "^" <> brackets (pretty s)) source
+    , "|" <+> "Tags" <> colon <+> commaSep (map pretty tags)
+    , "|" <+> "Yield" <> colon <+> prettyDouble scale
     , softline
     , "##" <+> "Ingredients"
     , vcat (map pretty ingredients)
@@ -64,14 +64,14 @@ instance Pretty Unit where
   pretty = \case
     Gram       -> "g"
     Milliliter -> "ml"
-    Tablespoon -> "tbs"
-    Teaspoon   -> "ts"
+    Tablespoon -> "tbsp"
+    Teaspoon   -> "tsp"
 
 instance Pretty Ingredient where
   pretty Ingredient{..} =
     "-"
     <+> fill 4 (prettyDouble amount)
-    <+> fill 3 (maybe emptyDoc pretty unit)
+    <+> fill 4 (maybe emptyDoc pretty unit)
     <+> pretty ingredient
     <+> maybe emptyDoc (parens . pretty) note
 
