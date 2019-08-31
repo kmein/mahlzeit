@@ -1,0 +1,31 @@
+title: Porridge
+tags: [porridge, cheap]
+scale: 2
+source: https://www.youtube.com/watch?v=0bcGOnkdsHs&t=5s
+
+ingredients:
+  - ingredient: oats
+    amount: 200
+    unit: g
+  - ingredient: soy milk
+    amount: 450
+    unit: ml
+  - ingredient: water
+    amount: 450
+    unit: ml
+  - ingredient: cinnamon
+    amount: 1
+    unit: ts
+  - ingredient: brown sugar
+    amount: 1
+    unit: tbs
+  - ingredient: apples
+    amount: 1
+  - ingredient: raisins
+    amount: 2
+    unit: tbs
+
+method:
+  - Add oats, soy milk, water, cinnamon and sugar to a saucepan.
+  - Cook while stirring on low heat until thick.
+  - Garnish with apple cubes and raisins.
