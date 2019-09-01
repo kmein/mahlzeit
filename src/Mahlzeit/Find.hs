@@ -2,6 +2,7 @@ module Mahlzeit.Find
   ( findAll
   , findById
   , find
+  , recipePath
   )
 where
 

@@ -57,7 +57,7 @@ instance Pretty Recipe where
     , vcat (map pretty ingredients)
     , softline
     , "##" <+> "Method"
-    , vsep $ zipWith (\i step -> pretty @Natural i <> dot <+> pretty step) [1..] method
+    , vsep $ zipWith (\i step -> pretty @Natural i <> dot <+> align (reflow step)) [1..] method
     ]
 
 instance Pretty Unit where
@@ -72,7 +72,7 @@ instance Pretty Ingredient where
     "-"
     <+> fill 4 (prettyDouble amount)
     <+> fill 4 (maybe emptyDoc pretty unit)
-    <+> pretty ingredient
+    <+> reflow ingredient
     <+> maybe emptyDoc (parens . pretty) note
 
 sgr :: [SGR] -> Doc ann -> Doc ann

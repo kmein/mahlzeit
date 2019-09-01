@@ -7,7 +7,9 @@ import           Control.Monad                  ( guard
 import           Data.List                      ( isSubsequenceOf )
 import           Data.Maybe                     ( fromMaybe )
 import           Data.Text                      ( Text )
-import           Data.Yaml                      ( decodeFileThrow )
+import           Data.Yaml                      ( decodeFileThrow
+                                                , encodeFile
+                                                )
 import           Numeric.Natural                ( Natural )
 import           Options.Applicative
 import           System.Console.ANSI
@@ -16,12 +18,14 @@ import           System.Directory               ( listDirectory
                                                 )
 import           System.Environment             ( getArgs
                                                 , getEnv
+                                                , lookupEnv
                                                 )
 import           System.FilePath.Posix          ( (</>)
                                                 , takeExtension
                                                 , takeBaseName
                                                 , (<.>)
                                                 )
+import           System.Process                 ( callCommand )
 import           Text.Printf                    ( printf )
 import qualified Data.Text
 import qualified Data.Text.IO
@@ -29,6 +33,7 @@ import qualified Data.Text.IO
 import           Mahlzeit.Find
 import           Mahlzeit.PrettyPrinter
 import           Mahlzeit.Recipe
+import           Mahlzeit.Import.MealMaster
 
 
 data SearchOptions
@@ -41,14 +46,16 @@ data SearchOptions
 data MahlzeitCommand
   = Display RecipeID (Maybe Double)
   | Search SearchOptions
+  | Import FilePath
+  | Edit RecipeID
 
 mahlzeitCommand :: Parser MahlzeitCommand
 mahlzeitCommand = subparser $ mconcat
   [ command "list" $ info (searchParser <**> helper) $ progDesc "List available recipes"
   , command "show" $ info (showParser <**> helper) $ progDesc "Show/rescale a recipe"
+  , command "import" $ info (importParser <**> helper) $ progDesc "Import a Meal-Master file"
+  , command "edit" $ info (editParser <**> helper) $ progDesc "Edit a recipe file"
     -- TODO: create 
-    -- TODO: import
-    -- TODO: edit
   ]
  where
   searchParser = do
@@ -56,7 +63,9 @@ mahlzeitCommand = subparser $ mconcat
     searchTags        <- optional $ some $ strOption (long "tag" <> help "Search for set tags")
     searchIngredients <- optional $ some $ strOption (long "ingredient" <> help "Search for used ingredients")
     pure $ Search $ SearchOptions {..}
-  showParser = Display <$> strArgument (metavar "ID") <*> optional (argument auto (metavar "SERVINGS"))
+  showParser   = Display <$> strArgument (metavar "ID") <*> optional (argument auto (metavar "SERVINGS"))
+  importParser = Import <$> strArgument (metavar "PATH")
+  editParser   = Edit <$> strArgument (metavar "ID")
 
 searchPredicate :: SearchOptions -> Recipe -> Bool
 searchPredicate SearchOptions {..} Recipe {..}
@@ -84,3 +93,14 @@ main = do
       let recipe' = maybe recipe (`rescale` recipe) factor
       putDoc $ pretty recipe'
       putChar '\n'
+    Edit recipeId -> do
+      editor <- fromMaybe "vim" <$> lookupEnv "EDITOR"
+      path   <- recipePath recipeId
+      callCommand (editor <> " " <> path)
+    Import path -> do
+      parseResult <- parseMealMaster path
+      case parseResult of
+        Left  e      -> print e
+        Right recipe -> do
+          ymlPath <- recipePath $ takeBaseName path
+          encodeFile ymlPath recipe

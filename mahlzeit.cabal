@@ -16,25 +16,16 @@ executable mahlzeit
   other-modules:       Mahlzeit.Recipe
                      , Mahlzeit.Find
                      , Mahlzeit.PrettyPrinter
+                     , Mahlzeit.Import.MealMaster
   build-depends:       base
-                     , yaml
-                     , text
                      , ansi-terminal
                      , directory
                      , filepath
+                     , megaparsec
                      , optparse-applicative
                      , prettyprinter
-  hs-source-dirs:      mahlzeit
-  default-language:    Haskell2010
-
-executable mahlzeit-mmf
-  main-is:             Main.hs
-  other-modules:       Parser
-                     , Types
-                     , PrettyPrinter
-  build-depends:       base
-                     , megaparsec >=7 && <8
+                     , process
                      , text
-                     , pretty
-  hs-source-dirs:      mahlzeit-mmf
+                     , yaml
+  hs-source-dirs:      src
   default-language:    Haskell2010
