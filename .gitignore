@@ -3,3 +3,6 @@ dist-newstyle
 result
 dist
 cabal.project.local
+.direnv
+.envrc
+.history
