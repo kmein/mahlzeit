@@ -8,4 +8,4 @@ jobs:
     - name: Get package index
       run: cabal update
     - name: Build
-      run: cabal build
+      run: cabal new-build
