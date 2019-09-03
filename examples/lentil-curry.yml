@@ -3,6 +3,12 @@ source: https://simpleveganblog.com/easy-lentil-curry/
 scale: 4
 tags: [Indian, Asian, vegan]
 
+nutrients:
+  kcal: 550
+  carbohydrates: 85.3
+  protein: 19.6
+  fat: 16.6
+
 ingredients:
   - ingredient: dry lentils
     amount: 200
