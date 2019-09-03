@@ -50,8 +50,8 @@ commaSep = encloseSep emptyDoc emptyDoc (comma <> space)
 instance Pretty Recipe where
   pretty Recipe{..} = vsep
     [ "#" <+> pretty title <> maybe emptyDoc (\s -> "^" <> brackets (pretty s)) source
-    , "|" <+> "Tags" <> colon <+> commaSep (map pretty tags)
-    , "|" <+> "Yield" <> colon <+> prettyDouble scale
+    , "Tags" <> hardline <> colon <+> commaSep (map pretty tags) <> hardline
+    , "Yield" <> hardline <> colon <+> prettyDouble scale
     , softline
     , "##" <+> "Ingredients"
     , vcat (map pretty ingredients)
