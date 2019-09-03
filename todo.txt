@@ -1,1 +1,2 @@
 (A) add file format information to +readme
+(B) add nutrient information to +readme
