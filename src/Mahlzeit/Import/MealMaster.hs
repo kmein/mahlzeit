@@ -101,6 +101,41 @@ parseUnit =
     <|> ((Left 453.59, Just Gram) <$ string "lb")
     <|> ((Left 1, Nothing) <$ (string "x" <|> string "ea"))
 
+{-
+ - x per serving
+ - sm small
+ - md medium
+ - lg large
+ - cn can
+ - pk package
+ - pn pinch
+ - dr drop
+ - ds dash
+ - ct carton
+ - bn bunch
+ - sl slice
+ - ea each
+ - t/ts teaspoon
+ - T/tb tablespoon
+ - fl fluid ounce
+ - c cup
+ - pt pint
+ - qt quart
+ - ga gallon
+ - oz ounce
+ - lb pound
+ - ml milliliter
+ - cc cubic cm
+ - cl centiliter
+ - dl deciliter
+ - l liter
+ - mg milligram
+ - cg centigram
+ - dg decigram
+ - g gram
+ - kg kilogram
+ -}
+
 parseName :: Parser Text
 parseName = Text.pack <$> anySingle `someTill` newline
 
