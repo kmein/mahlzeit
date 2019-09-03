@@ -3,9 +3,9 @@ pkgs.mkShell {
   buildInputs = with pkgs; [
     (writers.writeDashBin "render" ''
       ${pandoc}/bin/pandoc \
-        --variable=mainfont:Roboto \
+        --variable=fontfamily:libertine \
+        --variable=documentclass:scrartcl \
         --variable=pagestyle:empty \
-        --pdf-engine=xelatex \
         $@
     '')
     (haskellPackages.callPackage (import ./default.nix) {})
