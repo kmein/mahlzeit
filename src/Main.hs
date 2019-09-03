@@ -90,7 +90,7 @@ main = do
       putChar '\n'
     Display recipeId factor -> do
       recipe <- findById recipeId
-      let recipe' = maybe recipe (`rescale` recipe) factor
+      let recipe' = rescale (fromMaybe (scale recipe) factor) recipe
       putDoc $ pretty recipe'
       putChar '\n'
     Edit recipeId -> do

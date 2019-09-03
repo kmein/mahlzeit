@@ -20,6 +20,7 @@ import           Data.Text                      ( Text
 import           Numeric.Natural                ( Natural )
 import           System.Console.ANSI
 import           Text.Printf
+import           Data.Maybe                     ( catMaybes )
 import           Data.Text.Prettyprint.Doc
 import           Data.Text.Prettyprint.Doc.Util ( reflow )
 import           Data.Text.Prettyprint.Doc.Render.Text
@@ -47,25 +48,29 @@ prettyDouble x =
 commaSep :: [Doc ann] -> Doc ann
 commaSep = encloseSep emptyDoc emptyDoc (comma <> space)
 
+pipeSep :: [Doc ann] -> Doc ann
+pipeSep = encloseSep emptyDoc emptyDoc (space <> "|" <> space)
+
 markdownDescription :: Doc ann -> Doc ann -> Doc ann
 markdownDescription key value = key <> hardline <> colon <+> value <> hardline
 
 instance Pretty Nutrients where
   pretty Nutrients{..} = 
-    vcat
-      [ maybe emptyDoc (markdownDescription "Calories" . (<+> "kcal") . pretty . round') kcal
-      , maybe emptyDoc (markdownDescription "Protein" . (<+> "g") . pretty . round') protein
-      , maybe emptyDoc (markdownDescription "Fat" . (<+> "g") . pretty . round') fat
-      , maybe emptyDoc (markdownDescription "Carbohydrates" . (<+> "g") . pretty . round') carbohydrates
+    markdownDescription "Nutrients" $ pipeSep $ catMaybes 
+      [ fmap (\n -> round' n <+> "kcal") kcal
+      , fmap (\n -> "carbs" <+> round' n <+> "g") carbohydrates
+      , fmap (\n -> "protein" <+> round' n <+> "g") protein
+      , fmap (\n -> "fat" <+> round' n <+> "g") fat
       ]
-    where round' = round @Double @Int
+    where round' = pretty . round @Double @Int
 
 instance Pretty Recipe where
   pretty Recipe{..} = vsep
     [ "#" <+> pretty title <> maybe emptyDoc (\s -> "^" <> brackets (pretty s)) source
     , markdownDescription "Tags" $ commaSep (map pretty tags) 
     , markdownDescription "Yield" $ prettyDouble scale
-    , maybe emptyDoc (("##" <+> "Nutritional Information" <>) . (hardline <>) . pretty) nutrients
+    , maybe emptyDoc pretty nutrients
+    , softline
     , "##" <+> "Ingredients"
     , vcat (map pretty ingredients)
     , softline

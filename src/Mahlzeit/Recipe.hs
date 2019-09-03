@@ -78,10 +78,10 @@ rescale factor recipe = recipe
   { ingredients = map (\ingredient -> ingredient { amount = adjust (amount ingredient) })
                       (ingredients recipe)
   , scale       = factor
-  , nutrients   = (\n -> n { kcal = adjust <$> kcal n
-                           , fat = adjust <$> fat n
-                           , carbohydrates = adjust <$> carbohydrates n
-                           , protein = adjust <$> carbohydrates n
+  , nutrients   = (\n -> n { kcal = (* factor) <$> kcal n
+                           , fat = (* factor) <$> fat n
+                           , carbohydrates = (* factor) <$> carbohydrates n
+                           , protein = (* factor) <$> protein n
                            }) <$> nutrients recipe
   }
   where
