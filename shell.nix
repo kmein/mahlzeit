@@ -8,6 +8,7 @@ pkgs.mkShell {
         --pdf-engine=xelatex \
         $@
     '')
+    (haskellPackages.callPackage (import ./default.nix) {})
   ];
   shellHook = ''
     export HISTFILE=${toString ./.history}
