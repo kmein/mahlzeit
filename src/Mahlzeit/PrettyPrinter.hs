@@ -47,12 +47,25 @@ prettyDouble x =
 commaSep :: [Doc ann] -> Doc ann
 commaSep = encloseSep emptyDoc emptyDoc (comma <> space)
 
+markdownDescription :: Doc ann -> Doc ann -> Doc ann
+markdownDescription key value = key <> hardline <> colon <+> value <> hardline
+
+instance Pretty Nutrients where
+  pretty Nutrients{..} = 
+    vcat
+      [ maybe emptyDoc (markdownDescription "Calories" . (<+> "kcal") . pretty . round') kcal
+      , maybe emptyDoc (markdownDescription "Protein" . (<+> "g") . pretty . round') protein
+      , maybe emptyDoc (markdownDescription "Fat" . (<+> "g") . pretty . round') fat
+      , maybe emptyDoc (markdownDescription "Carbohydrates" . (<+> "g") . pretty . round') carbohydrates
+      ]
+    where round' = round @Double @Int
+
 instance Pretty Recipe where
   pretty Recipe{..} = vsep
     [ "#" <+> pretty title <> maybe emptyDoc (\s -> "^" <> brackets (pretty s)) source
-    , "Tags" <> hardline <> colon <+> commaSep (map pretty tags) <> hardline
-    , "Yield" <> hardline <> colon <+> prettyDouble scale
-    , softline
+    , markdownDescription "Tags" $ commaSep (map pretty tags) 
+    , markdownDescription "Yield" $ prettyDouble scale
+    , maybe emptyDoc (("##" <+> "Nutritional Information" <>) . (hardline <>) . pretty) nutrients
     , "##" <+> "Ingredients"
     , vcat (map pretty ingredients)
     , softline

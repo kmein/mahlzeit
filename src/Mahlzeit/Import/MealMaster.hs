@@ -138,6 +138,7 @@ parseRecipe = do
     <$>        anySingle
     `someTill` try parseFooter
   let source = Nothing
+  let nutrients = Nothing
   pure Recipe {..}
 
 parseFromFile :: Parser a -> FilePath -> IO (Either (ParseErrorBundle Text Void) a)

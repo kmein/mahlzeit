@@ -20,10 +20,22 @@ data Recipe
   , tags :: [Text]
   , ingredients :: [Ingredient]
   , method :: [Text]
+  , nutrients :: Maybe Nutrients
   } deriving (Show, Generic)
 
 instance FromJSON Recipe
 instance ToJSON Recipe
+
+data Nutrients
+  = Nutrients
+  { kcal :: Maybe Double
+  , protein :: Maybe Double
+  , fat :: Maybe Double
+  , carbohydrates :: Maybe Double
+  } deriving (Show, Generic)
+
+instance FromJSON Nutrients
+instance ToJSON Nutrients
 
 data Ingredient
   = Ingredient
@@ -63,8 +75,15 @@ type RecipeID = String
 
 rescale :: Double -> Recipe -> Recipe
 rescale factor recipe = recipe
-  { ingredients = map (\ingredient -> ingredient { amount = factor * amount ingredient / scale recipe })
+  { ingredients = map (\ingredient -> ingredient { amount = adjust (amount ingredient) })
                       (ingredients recipe)
   , scale       = factor
+  , nutrients   = (\n -> n { kcal = adjust <$> kcal n
+                           , fat = adjust <$> fat n
+                           , carbohydrates = adjust <$> carbohydrates n
+                           , protein = adjust <$> carbohydrates n
+                           }) <$> nutrients recipe
   }
+  where
+    adjust = (* factor) . (/ scale recipe)
 
