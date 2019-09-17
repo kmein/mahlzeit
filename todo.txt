@@ -1,2 +1,3 @@
 (A) add file format information to +readme
-(B) add nutrient information to +readme
+(A) add nutrition documentation to +readme
+(A) tests
