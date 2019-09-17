@@ -4,6 +4,7 @@
 {-# LANGUAGE TypeFamilies #-}
 module Mahlzeit.Import.MealMaster
   ( parseMealMaster
+  , parseRecipe
   )
 where
 

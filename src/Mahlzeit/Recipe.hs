@@ -21,7 +21,7 @@ data Recipe
   , ingredients :: [Ingredient]
   , method :: [Text]
   , nutrients :: Maybe Nutrients
-  } deriving (Show, Generic)
+  } deriving (Show, Generic, Eq)
 
 instance FromJSON Recipe
 instance ToJSON Recipe
@@ -32,7 +32,7 @@ data Nutrients
   , protein :: Maybe Double
   , fat :: Maybe Double
   , carbohydrates :: Maybe Double
-  } deriving (Show, Generic)
+  } deriving (Show, Generic, Eq)
 
 instance FromJSON Nutrients
 instance ToJSON Nutrients
@@ -43,7 +43,7 @@ data Ingredient
   , amount :: Double
   , unit :: Maybe Unit
   , note :: Maybe Text
-  } deriving (Show, Generic)
+  } deriving (Show, Generic, Eq)
 
 instance FromJSON Ingredient
 instance ToJSON Ingredient
@@ -53,7 +53,7 @@ data Unit
   | Teaspoon
   | Tablespoon
   | Milliliter
-  deriving (Show)
+  deriving (Show, Eq)
 
 instance FromJSON Unit where
   parseJSON (String text) = case text of

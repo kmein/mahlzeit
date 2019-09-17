@@ -8,7 +8,7 @@ pkgs.mkShell {
         --variable=pagestyle:empty \
         $@
     '')
-    (haskellPackages.callPackage (import ./default.nix) {})
+    # (haskellPackages.callPackage (import ./default.nix) {})
   ];
   shellHook = ''
     export HISTFILE=${toString ./.history}
