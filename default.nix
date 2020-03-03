@@ -1,11 +1,17 @@
 { pkgs ? import <nixpkgs> {} }:
-pkgs.haskellPackages.developPackage {
+with pkgs.haskellPackages;
+developPackage {
   root = ./.;
   modifier = drv:
   pkgs.haskell.lib.addBuildTools drv
-    (with pkgs.haskellPackages;
     [ cabal-install
       ghcid
-      (hoogleLocal { packages = drv.propagatedBuildInputs; })
-    ]);
+      (pkgs.writers.writeDashBin "render" ''
+        ${pandoc}/bin/pandoc \
+          --variable=fontfamily:libertine \
+          --variable=documentclass:scrartcl \
+          --variable=pagestyle:empty \
+          $@
+      '')
+  ];
 }
