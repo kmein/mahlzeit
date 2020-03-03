@@ -18,6 +18,7 @@ exampleRecipe :: Recipe
 exampleRecipe = Recipe
   { title = "Chili Con Carne"
   , source = Nothing
+  , scale = 1
   , tags = ["Main dish", "Meats"]
   , ingredients = 
     [ Ingredient { ingredient = undefined
