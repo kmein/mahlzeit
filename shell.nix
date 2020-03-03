@@ -8,10 +8,7 @@ pkgs.mkShell {
         --variable=pagestyle:empty \
         $@
     '')
-    # (haskellPackages.callPackage (import ./default.nix) {})
   ];
-  shellHook = ''
-    export HISTFILE=${toString ./.history}
-    export RECIPE_HOME=${toString ./examples}
-  '';
+
+  RECIPE_HOME = ./examples;
 }
