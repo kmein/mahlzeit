@@ -25,6 +25,7 @@ import           System.FilePath.Posix          ( (</>)
                                                 , takeBaseName
                                                 , (<.>)
                                                 )
+import           System.IO
 import           System.Process                 ( callCommand )
 import           Text.Printf                    ( printf )
 import qualified Data.Text
@@ -82,6 +83,7 @@ searchPredicate SearchOptions {..} Recipe {..}
 
 main :: IO ()
 main = do
+  hSetBuffering stdout NoBuffering
   command <- execParser $ info (mahlzeitCommand <**> helper) fullDesc
   case command of
     Search options -> do

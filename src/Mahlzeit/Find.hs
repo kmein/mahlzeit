@@ -6,27 +6,50 @@ module Mahlzeit.Find
   )
 where
 
-import           Control.Monad                  ( guard
+import           Control.Monad                  ( when
+                                                , unless
                                                 , (<=<)
+                                                , guard
                                                 )
+import           Data.Maybe                     ( fromMaybe )
 import           Data.Yaml                      ( decodeFileThrow
                                                 , encodeFile
                                                 )
-import           System.Directory               ( doesDirectoryExist
+import           System.Directory               ( createDirectory
+                                                , doesDirectoryExist
                                                 , doesFileExist
                                                 , listDirectory
                                                 )
-import           System.Environment             ( getEnv )
+import           System.Environment             ( getEnv
+                                                , lookupEnv
+                                                )
 import           System.FilePath.Posix
 
 import           Mahlzeit.Recipe                ( RecipeID
                                                 , Recipe
                                                 )
 
+defaultHome :: IO FilePath
+defaultHome = (</> "mahlzeit") <$> getEnv "HOME"
+
+confirmYesNo :: String -> IO Bool
+confirmYesNo question = do
+  putStr (question ++ " (Y/n) ")
+  answer <- getLine
+  return $ answer == "Y"
+
+createIfNotExist :: FilePath -> IO ()
+createIfNotExist path = do
+  pathExists <- doesDirectoryExist path
+  unless pathExists $ do
+    doCreate <- confirmYesNo $ "Create directory " ++ path ++ "?"
+    when doCreate $ createDirectory path
+
 recipeHome :: IO FilePath
 recipeHome = do
-  home <- getEnv "RECIPE_HOME"
-  guard =<< doesDirectoryExist home
+  home' <- defaultHome
+  home  <- fromMaybe home' <$> lookupEnv "RECIPE_HOME"
+  createIfNotExist home
   pure home
 
 recipePath :: RecipeID -> IO FilePath
