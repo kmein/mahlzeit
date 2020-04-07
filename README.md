@@ -9,6 +9,9 @@ To use Mahlzeit, you have to set the `RECIPE_HOME` variable in the environment w
 $ export RECIPE_HOME=path/to/your/recipe/folder
 ```
 
+If `RECIPE_HOME` is not set, Mahlzeit will use `$HOME/mahlzeit` as your recipe home and
+create it on the first run if wanted.
+
 ### Searching your Recipe Database
 Mahlzeit allows you to search through your recipes by tags, ingredients and titles. The following, for example, looks for all vegan Asian meals that mention peanut butter in their ingredients.
 
