@@ -1,13 +1,13 @@
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE OverloadedStrings #-}
-import Test.Tasty
-import Test.Tasty.HUnit
-import Test.DocTest
-import Text.RawString.QQ
-import Text.Megaparsec
+import           Test.Tasty
+import           Test.Tasty.HUnit
+import           Test.DocTest
+import           Text.RawString.QQ
+import           Text.Megaparsec
 
-import Mahlzeit.Recipe
-import Mahlzeit.Import.MealMaster (parseRecipe)
+import           Mahlzeit.Recipe
+import           Mahlzeit.Import.MealMaster     ( parseRecipe )
 
 main :: IO ()
 main = do
@@ -16,24 +16,35 @@ main = do
 
 exampleRecipe :: Recipe
 exampleRecipe = Recipe
-  { title = "Chili Con Carne"
-  , source = Nothing
-  , tags = ["Main dish", "Meats"]
-  , ingredients = 
-    [ Ingredient { ingredient = undefined
-                 , amount = undefined
-                 , unit = undefined
-                 , note = Nothing
+  { title       = "Chili Con Carne"
+  , source      = Nothing
+  , scale       = 1.0
+  , tags        = ["Main dish", "Meats"]
+  , ingredients =
+    [ Ingredient { ingredient = "ground beef", amount = 453.59, unit = Just Gram, note = Nothing }
+    , Ingredient { ingredient = "minced onion", amount = 355.1625, unit = Just Milliliter, note = Nothing }
+    , Ingredient { ingredient = "cooked kidney beans"
+                 , amount     = 710.325
+                 , unit       = Just Milliliter
+                 , note       = Nothing
                  }
+    , Ingredient { ingredient = "condensed tomato soup"
+                 , amount     = 378.84
+                 , unit       = Just Milliliter
+                 , note       = Nothing
+                 }
+    , Ingredient { ingredient = "chili powder", amount = 3.0, unit = Just Tablespoon, note = Nothing }
+    , Ingredient { ingredient = "flour", amount = 1.0, unit = Just Tablespoon, note = Nothing }
+    , Ingredient { ingredient = "water", amount = 3.0, unit = Just Tablespoon, note = Nothing }
+    , Ingredient { ingredient = "salt", amount = 1.0, unit = Just Teaspoon, note = Nothing }
     ]
-  , method = 
-    [
+  , method      =
+    [ "Cook beef and onions until browned. Add the beans and soup and cook for 10 or 15 minutes. Blend the chili powder, flour, water and saltinto a paste and add in. Cook over low heat, stirring frequently, 45 min. Serve hot."
     ]
-  , nutrients = Nothing
+  , nutrients   = Nothing
   }
 
-mealMasterExampleRecipe = [r|
-MMMMM----- Recipe via Meal-Master (tm) v8.02
+mealMasterExampleRecipe = [r|MMMMM----- Recipe via Meal-Master (tm) v8.02
 
       Title: Chili Con Carne
  Categories: Main dish, Meats
@@ -59,8 +70,7 @@ MMMMM
 
 
 tests :: [TestTree]
-tests = 
-  [ testGroup "Mahlzeit.Import.MealMaster" 
-    [ testCase "parsing" $ Just exampleRecipe @=? parseMaybe parseRecipe mealMasterExampleRecipe
-    ]
+tests =
+  [ testGroup "Mahlzeit.Import.MealMaster"
+              [testCase "parsing" $ Just exampleRecipe @=? parseMaybe parseRecipe mealMasterExampleRecipe]
   ]

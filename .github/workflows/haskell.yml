@@ -1,7 +1,7 @@
 name: Haskell CI
 on: [push]
 jobs:
-  build:
+  build_test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
@@ -9,3 +9,5 @@ jobs:
       uses: cachix/install-nix-action@v6
     - name: Build with Nix
       run: nix-build
+    - name: Test
+      run: nix-shell --run "cabal test"
