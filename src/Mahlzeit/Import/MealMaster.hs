@@ -54,7 +54,7 @@ parseTags = do
   string "Categories:"
   space
   sepBy1 parseTag (char ',' *> optional space)
-  where parseTag = Text.pack <$> some (letterChar <|> char ' ')
+  where parseTag = Text.pack <$> some (letterChar <|> oneOf ['/', ' '])
 
 parseScale :: Parser Double
 parseScale = do
@@ -122,7 +122,7 @@ parseIngredient = do
     char '-'
     Text.pack <$> anySingle `someTill` newline
   let ingredient = n <> maybe "" (" " <>) c
-  pure Ingredient {..}
+  pure Ingredient { .. }
 
 parseRecipe :: Parser Recipe
 parseRecipe = do
@@ -138,11 +138,12 @@ parseRecipe = do
     .          Text.pack
     <$>        anySingle
     `someTill` try parseFooter
-  let source = Nothing
+  let source    = Nothing
   let nutrients = Nothing
-  pure Recipe {..}
+  pure Recipe { .. }
 
-parseFromFile :: Parser a -> FilePath -> IO (Either (ParseErrorBundle Text Void) a)
+parseFromFile
+  :: Parser a -> FilePath -> IO (Either (ParseErrorBundle Text Void) a)
 parseFromFile p file = runParser p file <$> Text.readFile file
 
 parseMealMaster :: FilePath -> IO (Either (ParseErrorBundle Text Void) Recipe)

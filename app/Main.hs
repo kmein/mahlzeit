@@ -4,6 +4,8 @@
 import           Control.Monad                  ( guard
                                                 , forM_
                                                 )
+import           Data.Aeson                     ( encode )
+import qualified Data.ByteString.Lazy
 import           Data.List                      ( isSubsequenceOf )
 import           Data.Maybe                     ( fromMaybe )
 import           Data.Text                      ( Text )
@@ -29,12 +31,14 @@ import           System.IO
 import           System.Process                 ( callCommand )
 import           Text.Printf                    ( printf )
 import qualified Data.Text
+import qualified Data.Text.Encoding
 import qualified Data.Text.IO
 
 import           Mahlzeit.Find
 import           Mahlzeit.PrettyPrinter
 import           Mahlzeit.Recipe
 import           Mahlzeit.Import.MealMaster
+import           Mahlzeit.Export.Json
 
 
 data SearchOptions
@@ -49,6 +53,7 @@ data MahlzeitCommand
   | Search SearchOptions
   | Import FilePath
   | Edit RecipeID
+  | Export RecipeID
 
 mahlzeitCommand :: Parser MahlzeitCommand
 mahlzeitCommand = subparser $ mconcat
@@ -58,6 +63,8 @@ mahlzeitCommand = subparser $ mconcat
     "Show/rescale a recipe"
   , command "import" $ info (importParser <**> helper) $ progDesc
     "Import a Meal-Master file"
+  , command "export" $ info (exportParser <**> helper) $ progDesc
+    "Export a recipe"
   , command "edit" $ info (editParser <**> helper) $ progDesc
     "Edit a recipe file"
     -- TODO: create 
@@ -73,6 +80,7 @@ mahlzeitCommand = subparser $ mconcat
     pure $ Search $ SearchOptions { .. }
   showParser = Display <$> strArgument (metavar "ID") <*> optional
     (argument auto (metavar "SERVINGS"))
+  exportParser = Export <$> strArgument (metavar "ID")
   importParser = Import <$> strArgument (metavar "PATH")
   editParser   = Edit <$> strArgument (metavar "ID")
 
@@ -111,6 +119,12 @@ main = do
       let recipe' = rescale (fromMaybe (scale recipe) factor) recipe
       putDoc $ pretty recipe'
       putChar '\n'
+    Export recipeId -> do
+      recipe <- findById recipeId
+      Data.Text.IO.putStrLn
+        $ Data.Text.Encoding.decodeUtf8
+        $ Data.ByteString.Lazy.toStrict
+        $ encode (toJsonRecipe recipe)
     Edit recipeId -> do
       editor <- fromMaybe "vim" <$> lookupEnv "EDITOR"
       path   <- recipePath recipeId

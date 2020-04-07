@@ -17,7 +17,9 @@ library
                      , Mahlzeit.Find
                      , Mahlzeit.PrettyPrinter
                      , Mahlzeit.Import.MealMaster
+                     , Mahlzeit.Export.Json
   build-depends:       base
+                     , aeson
                      , ansi-terminal
                      , directory
                      , filepath
@@ -31,8 +33,10 @@ executable mahlzeit
   hs-source-dirs:      app
   main-is:             Main.hs
   build-depends:       mahlzeit
+                     , aeson
                      , ansi-terminal
                      , base
+                     , bytestring
                      , directory
                      , filepath
                      , optparse-applicative
