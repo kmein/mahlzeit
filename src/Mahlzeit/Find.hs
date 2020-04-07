@@ -57,8 +57,11 @@ recipePath recipeId = (</> recipeId <.> "yml") <$> recipeHome
 
 findAll :: IO [(RecipeID, Recipe)]
 findAll = do
-  home    <- recipeHome
-  paths   <- map (home </>) . filter (\file -> takeExtension file == ".yml") <$> listDirectory home
+  home  <- recipeHome
+  paths <-
+    map (home </>)
+    .   filter (\file -> takeExtension file == ".yml")
+    <$> listDirectory home
   recipes <- traverse decodeFileThrow paths
   pure $ zip (map takeBaseName paths) recipes
 

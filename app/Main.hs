@@ -52,34 +52,50 @@ data MahlzeitCommand
 
 mahlzeitCommand :: Parser MahlzeitCommand
 mahlzeitCommand = subparser $ mconcat
-  [ command "list" $ info (searchParser <**> helper) $ progDesc "List available recipes"
-  , command "show" $ info (showParser <**> helper) $ progDesc "Show/rescale a recipe"
-  , command "import" $ info (importParser <**> helper) $ progDesc "Import a Meal-Master file"
-  , command "edit" $ info (editParser <**> helper) $ progDesc "Edit a recipe file"
+  [ command "list" $ info (searchParser <**> helper) $ progDesc
+    "List available recipes"
+  , command "show" $ info (showParser <**> helper) $ progDesc
+    "Show/rescale a recipe"
+  , command "import" $ info (importParser <**> helper) $ progDesc
+    "Import a Meal-Master file"
+  , command "edit" $ info (editParser <**> helper) $ progDesc
+    "Edit a recipe file"
     -- TODO: create 
   ]
  where
   searchParser = do
-    searchTitle       <- optional $ strOption (long "title" <> help "Search for parts of the title")
-    searchTags        <- optional $ some $ strOption (long "tag" <> help "Search for set tags")
-    searchIngredients <- optional $ some $ strOption (long "ingredient" <> help "Search for used ingredients")
-    pure $ Search $ SearchOptions {..}
-  showParser   = Display <$> strArgument (metavar "ID") <*> optional (argument auto (metavar "SERVINGS"))
+    searchTitle <- optional
+      $ strOption (long "title" <> help "Search for parts of the title")
+    searchTags <- optional $ some $ strOption
+      (long "tag" <> help "Search for set tags")
+    searchIngredients <- optional $ some $ strOption
+      (long "ingredient" <> help "Search for used ingredients")
+    pure $ Search $ SearchOptions { .. }
+  showParser = Display <$> strArgument (metavar "ID") <*> optional
+    (argument auto (metavar "SERVINGS"))
   importParser = Import <$> strArgument (metavar "PATH")
   editParser   = Edit <$> strArgument (metavar "ID")
 
 searchPredicate :: SearchOptions -> Recipe -> Bool
-searchPredicate SearchOptions {..} Recipe {..}
-  = let
-      titleOk = maybe True (title `contains`) searchTitle
-      -- all ingredient searches occur in the recipe's ingredients
-      ingredientsOk =
-        maybe True (all (\search -> any ((`contains` search) . ingredient) ingredients)) searchIngredients
-      tagsOk =
-        maybe True (\ts -> map Data.Text.toLower ts `isSubsequenceOf` map Data.Text.toLower tags) searchTags
-    in
-      titleOk && ingredientsOk && tagsOk
-  where x `contains` y = Data.Text.isInfixOf (Data.Text.toLower y) (Data.Text.toLower x)
+searchPredicate SearchOptions {..} Recipe {..} =
+  let
+    titleOk       = maybe True (title `contains`) searchTitle
+    -- all ingredient searches occur in the recipe's ingredients
+    ingredientsOk = maybe
+      True
+      (all (\search -> any ((`contains` search) . ingredient) ingredients))
+      searchIngredients
+    tagsOk = maybe
+      True
+      (\ts ->
+        map Data.Text.toLower ts `isSubsequenceOf` map Data.Text.toLower tags
+      )
+      searchTags
+  in
+    titleOk && ingredientsOk && tagsOk
+ where
+  x `contains` y =
+    Data.Text.isInfixOf (Data.Text.toLower y) (Data.Text.toLower x)
 
 main :: IO ()
 main = do
