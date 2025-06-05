@@ -1,6 +1,9 @@
 # Mahlzeit!
 Mahlzeit [ˈmaːlˌt͡saɪ̯t] helps you manage your favourite recipes.
 
+> [!TIP]
+> This project is unmaintained. I think you should give [Cooklang](https://cooklang.org/) a try.
+
 ## Usage
 
 To use Mahlzeit, you have to set the `RECIPE_HOME` variable in the environment where you run it.
